@@ -1,81 +1,96 @@
 # DSCI 552 Homework 7
 
-Run these commands from the homework directory. The Python script reads the CSV directly from `Homework 7 Data.zip`. The supplied ZIP and assignment PDF are preserved.
+## Repository contents
 
-## Submission files
+This repository contains three files:
 
-- `DSCI552_HW7_Report.pdf` is the English report with code excerpts, the CH curve, Monte Carlo results, and the ISLR dendrograms.
-- `DSCI552_HW7.ipynb` is the executed, self-contained companion. The required questions are 1(a), 1(b)(i)–(iv), 2(a)–(c), and 3. Extra Practice items 1(b)(v), 1(b)(vi), and 4 are omitted.
+- `DSCI552_HW7_Report.pdf`: the report (7 pages) with code excerpts, tables, the CH curve, the Monte Carlo results, and the ISLR 12.6.2 dendrograms.
+- `DSCI552_HW7.ipynb`: the companion notebook with all code and saved outputs. It covers the required questions 1(a), 1(b)(i)–(iv), 2(a)–(c), and 3. Extra Practice items 1(b)(v), 1(b)(vi), and 4 are not included.
+- `README.md`: this file.
 
-## Reproduce from the notebook
+## Reproduce the results
 
-Install the pinned dependencies below. Place the notebook and `Homework 7 Data.zip` together in a clean directory. With the environment activated, use Run All in a Python 3 kernel or run the following from that directory.
+### 1. Get the course data
 
-~~~sh
-python -m nbconvert --to notebook --execute --ExecutePreprocessor.timeout=5400 \
-  --output DSCI552_HW7_reexecuted.ipynb DSCI552_HW7.ipynb
-~~~
+The data archive `Homework 7 Data.zip` is not in this repository. Download it from the DSCI 552 course materials and keep its original name. The notebook reads `Anuran Calls (MFCCs)/Frogs_MFCCs.csv` directly from the ZIP, so it does not need to be unzipped.
 
-The notebook embeds the experiment code and performs the full fit. It creates `notebook_results/` with fresh predictions, CV scores, CH scores, and cluster assignments. Reduce `JOBS` in the setup cell if needed.
+### 2. Install the dependencies
 
-## Reproduce from the Python script
+The recorded run used Python 3.13.5 with these package versions:
 
-The recorded run used Python 3.13.5 and the package versions in `requirements.txt`.
+```text
+numpy==2.4.3
+pandas==3.0.1
+scipy==1.17.1
+scikit-learn==1.8.0
+imbalanced-learn==0.14.1
+joblib==1.5.3
+threadpoolctl==3.6.0
+python-dateutil==4.0.0
+sklearn-compat==0.1.6
+tzdata==2026.6
+matplotlib==3.11.2
+ipykernel==7.4.0
+nbconvert==7.17.2
+```
+
+Create an environment and install them:
 
 ```sh
 python3.13 -m venv .venv
 . .venv/bin/activate
-python -m pip install -r requirements.txt
-python hw7_experiments.py all --jobs 4
+python -m pip install \
+  numpy==2.4.3 \
+  pandas==3.0.1 \
+  scipy==1.17.1 \
+  scikit-learn==1.8.0 \
+  imbalanced-learn==0.14.1 \
+  joblib==1.5.3 \
+  threadpoolctl==3.6.0 \
+  python-dateutil==4.0.0 \
+  sklearn-compat==0.1.6 \
+  tzdata==2026.6 \
+  matplotlib==3.11.2 \
+  ipykernel==7.4.0 \
+  nbconvert==7.17.2
 ```
 
-Use `svm` or `kmeans` in place of `all` to rerun one section. Set `--jobs 1` to run sequentially. BLAS/OpenMP thread counts are limited during fitting. The split seed is 552, CV seed is 553, SMOTE seed is 554, linear solver seed is 555, and the 50 clustering seeds are 7001 through 7050. Library builds and platforms may produce small numerical differences.
+To use Run All in a browser, also install a Jupyter front end such as JupyterLab. The command-line route below needs only the packages above.
 
-## Rebuild the report from saved results
+### 3. Place the files
 
-Install TeX Live or MacTeX with `pdflatex` on PATH and the packages declared in `DSCI552_HW7_Report.tex`, including TikZ/PGF. Run the following to verify the cache and build the report without fitting the models again.
+Put `DSCI552_HW7.ipynb` and `Homework 7 Data.zip` in the same empty directory:
+
+```text
+hw7/
+├── DSCI552_HW7.ipynb
+└── Homework 7 Data.zip
+```
+
+### 4. Run the notebook
+
+With the environment activated, run all cells from that directory, either with Run All in a Python 3 kernel or with:
 
 ```sh
-python build_hw7_report.py
-pdfinfo DSCI552_HW7_Report.pdf
+python -m nbconvert --to notebook --execute --ExecutePreprocessor.timeout=5400 \
+  --output DSCI552_HW7_reexecuted.ipynb DSCI552_HW7.ipynb
 ```
 
-The builder reconstructs the shared holdout, verifies the nine tuning searches and test metrics, and recomputes the cluster label assignments and metrics for all 50 runs. It inserts the verified numbers into the report. If experimental settings change, review the methods in the TeX file and update the interpretation in `hw7_discussion.tex`.
+The full run fits all SVM searches and the 50 K-means runs, so it takes a long time. The setup cell uses `JOBS = 8`; lower it on a machine with fewer cores. Seeds are fixed (split 552, CV 553, SMOTE 554, linear solver 555, clustering 7001–7050). Different library builds or platforms may give small numerical differences.
 
-## Saved results
+The run writes fresh predictions, CV scores, CH scores, and cluster assignments to `notebook_results/`. The metric-review cells at the end of the notebook read that directory. If those cells are run on their own without these outputs, an input-check cell stops with a message telling you to run the experiment cells first.
 
-- `results/svm_summary.json` holds the split statistics, model metrics, selected hyperparameters, and per-class metrics.
-- `results/svm_test_predictions.csv` holds each test row's zero-based source index, original labels, and all nine predictions.
-- `results/svm_cv.csv` holds every grid candidate's 10 fold scores.
-- `results/kmeans_monte_carlo.csv` holds the 50 seeds, selected cluster counts, CH scores, and Hamming metrics.
-- `results/kmeans_ch_candidates.csv` holds 2,450 candidate CH scores.
-- `results/kmeans_partitions.npz` holds each run's winning cluster assignments in original CSV row order, keyed by seed.
+## About the saved notebook outputs
 
-## Reproduction check
+The training and clustering outputs come from an earlier full execution in a clean directory with the course ZIP. The final metric-review cells (22-class binary Hamming loss and sample-averaged Jaccard accuracy) were executed later in a separate session against the author's local `results/` archive from that full run. The models and partitions were not refit. The notebook explains this in the section "Q1 and Q2 metric review from saved predictions".
 
-The submitted notebook executed all eight code cells in a clean directory with the course ZIP. The rerun matched the original cache exactly for the shared split, all metrics and per-class results, selected hyperparameters, 2,159 test prediction rows, all fold scores in the 126 CV candidate rows, all 50 Monte Carlo records, all 2,450 CH candidate scores, and all 50 winning partitions. CV timing columns were excluded because they measure elapsed runtime. The report tables were checked against the same verified cache.
+## Files kept locally, not in this repository
 
-## Metric review from existing results
+The following files were used to produce the report but are not needed to reproduce the results from the notebook: `hw7_experiments.py` (script version of the notebook code), `build_hw7_report.py`, `DSCI552_HW7_Report.tex`, `hw7_discussion.tex` (report build files), `requirements.txt` (its pinned versions are listed above), and `results/` (cached outputs of the original run).
 
-The updated report and notebook add the 22-class binary-indicator Hamming
-loss and sample-averaged Jaccard accuracy from Sorower §7.1.1. The original
-Hamming distance, loss, and score use the three categorical slots
-(Family, Genus, Species). Each new Jaccard ratio is computed per row before
-averaging.
+## Metric definitions
 
-This update executed the notebook's metric-review cells against the existing
-`results/` archive. Q1 reuses the 2,159 test rows in
-`svm_test_predictions.csv`. Q2 reconstructs the cluster modes from the
-course ZIP and `kmeans_partitions.npz` for each of the 50 seeds, then
-summarizes the scores with sample standard deviations (ddof=1). The fitted
-models and partitions were reused. The earlier full-run outputs are still
-included in the notebook.
-
-For the archive-only review, start a fresh kernel and run the setup cell,
-the metric-function cell, the K-means-function cell, and the three code
-cells under “Q1 and Q2 metric review from saved predictions”. Keep the ZIP
-and `results/` beside the notebook. Run All in a clean directory to fit
-from the ZIP and review those freshly generated results instead.
+The three-slot Hamming distance, loss, and score treat Family, Genus, and Species as three label positions. The three-slot Hamming score is the fraction of those positions predicted correctly. The 22-class binary-indicator Hamming loss and the sample-averaged Jaccard accuracy follow Sorower §7.1.1. The Jaccard accuracy is the intersection over union of each row's true and predicted label sets, averaged over rows.
 
 ## AI Usage Disclosure
 
