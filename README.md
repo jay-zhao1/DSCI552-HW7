@@ -55,6 +55,28 @@ The builder reconstructs the shared holdout, verifies the nine tuning searches a
 
 The submitted notebook executed all eight code cells in a clean directory with the course ZIP. The rerun matched the original cache exactly for the shared split, all metrics and per-class results, selected hyperparameters, 2,159 test prediction rows, all fold scores in the 126 CV candidate rows, all 50 Monte Carlo records, all 2,450 CH candidate scores, and all 50 winning partitions. CV timing columns were excluded because they measure elapsed runtime. The report tables were checked against the same verified cache.
 
+## Metric review from existing results
+
+The updated report and notebook add the 22-class binary-indicator Hamming
+loss and sample-averaged Jaccard accuracy from Sorower §7.1.1. The original
+Hamming distance, loss, and score use the three categorical slots
+(Family, Genus, Species). Each new Jaccard ratio is computed per row before
+averaging.
+
+This update executed the notebook's metric-review cells against the existing
+`results/` archive. Q1 reuses the 2,159 test rows in
+`svm_test_predictions.csv`. Q2 reconstructs the cluster modes from the
+course ZIP and `kmeans_partitions.npz` for each of the 50 seeds, then
+summarizes the scores with sample standard deviations (ddof=1). The fitted
+models and partitions were reused. The earlier full-run outputs are still
+included in the notebook.
+
+For the archive-only review, start a fresh kernel and run the setup cell,
+the metric-function cell, the K-means-function cell, and the three code
+cells under “Q1 and Q2 metric review from saved predictions”. Keep the ZIP
+and `results/` beside the notebook. Run All in a clean directory to fit
+from the ZIP and review those freshly generated results instead.
+
 ## AI Usage Disclosure
 
 I used AI tools to help me learn the relevant programming techniques and machine learning concepts, understand code implementations, and assist with debugging.
