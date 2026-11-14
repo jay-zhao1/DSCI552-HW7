@@ -54,3 +54,7 @@ The builder reconstructs the shared holdout, verifies the nine tuning searches a
 ## Reproduction check
 
 The submitted notebook executed all eight code cells in a clean directory with the course ZIP. The rerun matched the original cache exactly for the shared split, all metrics and per-class results, selected hyperparameters, 2,159 test prediction rows, all fold scores in the 126 CV candidate rows, all 50 Monte Carlo records, all 2,450 CH candidate scores, and all 50 winning partitions. CV timing columns were excluded because they measure elapsed runtime. The report tables were checked against the same verified cache.
+
+## AI Usage Disclosure
+
+I used AI tools to help me learn the relevant programming techniques and machine learning concepts, understand code implementations, and assist with debugging.
